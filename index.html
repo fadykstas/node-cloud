@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fibonacci</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/json2html/1.2.0/json2html.min.js"></script>
+</head>
+<body>
+<ul>
+    <li><a href="/">main</a></li>
+    <li><a id="clear-cache" onclick="clearCache(event)" href="/clear">clear cache</a></li>
+    <li><a id="link-json" onclick="getJson(event)" href="/json">json cache</a></li>
+</ul>
+<div>
+    <form id="fibonacci" action="/" method="post">
+        <input form='fibonacci' id="value" type="number" value="9" min="0" max="9999" maxlength = "4" style="padding: 10px">
+        <input form='fibonacci' type="submit" style="padding: 10px">
+    </form>
+</div>
+<div>
+    <textarea cols="60" id="result" style="margin-top: 20px; padding: 10px">result</textarea>
+    <pre id="div-json"></pre>
+</div>
+    <script type='text/javascript'>
+
+        function clearCache(event){
+            event.preventDefault();
+            $.get( '/clear', { } ).done( (res)=>{
+                $("#result").val('Cache cleared!');
+                getJson(event);
+            });
+        };
+
+        function getJson(event){
+            event.preventDefault();
+            $("#div-json").text('Cache is loading...');
+            $.get( '/json', { } ).done( (data)=>{
+                const tmpData = JSON.parse(data);
+                const formattedData = JSON.stringify(tmpData, null, '\t');
+                $("#div-json").text(formattedData);
+            });
+        };
+
+        /* attach a submit handler to the form */
+        $("#fibonacci").submit(function(event) {
+
+            /* stop form from submitting normally */
+            event.preventDefault();
+
+            /* get the action attribute from the <form action=""> element */
+            const $form = $( this ),
+                url = $form.attr( 'action' );
+
+            /* Send the data using post with element id name and name2*/
+            const posting = $.post( url, { value: $('#value').val() } );
+
+            $("#result").val('Calculating...');
+
+            /* Alerts the results */
+            posting.done(function( data ) {
+                jQuery('#result').attr('rows',data.length / 60 + 2);
+                $("#result").val(data);
+            });
+        });
+    </script>
+</body>
+</html>
