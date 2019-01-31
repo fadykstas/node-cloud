@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 8015;
+const port = 80;
 require('dotenv').config();
 
 const bodyParser = require('body-parser');
